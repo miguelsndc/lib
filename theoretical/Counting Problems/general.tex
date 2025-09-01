@@ -1,0 +1,59 @@
+\section*{Math, Counting, and Number Theory (Competitive Programming)}
+\subsection*{Combinatorics and Counting}
+\begin{itemize}
+    \item \textbf{Factorial}: $n! = n \times (n-1) \times \dots \times 1$; $0! = 1$.
+    \item \textbf{Permutations (arrangements without repetition)}: $P(n, k) = \frac{n!}{(n-k)!}$
+    \item \textbf{Combinations (selections without repetition)}: $C(n, k) = \binom{n}{k} = \frac{n!}{k!(n-k)!}$
+    \item \textbf{Binomial Theorem}: $(x+y)^n = \sum_{k=0}^n \binom{n}{k} x^{n-k} y^k$
+    \item \textbf{Pascal's Identity}: $\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}$
+    \item \textbf{Stars and Bars}:
+        Number of ways to distribute $n$ identical items into $k$ distinct bins (or non-negative integer solutions to $x_1 + \dots + x_k = n$):
+        \[
+        \binom{n + k - 1}{k - 1} \quad \text{or} \quad \binom{n + k - 1}{n}
+        \]
+        \textit{Use Case}: Find the number of ways to put 10 identical candies into 3 distinct bags. ($\binom{10+3-1}{3-1} = \binom{12}{2}$)
+    \item \textbf{Vandermonde's Identity}:
+        \[
+        \sum_{k=0}^r \binom{m}{k} \binom{n}{r - k} = \binom{m + n}{r}
+        \]
+        \textit{Use Case}: Choosing $r$ people from a group of $m$ men and $n$ women. The LHS sums ways to choose $k$ men and $r-k$ women.
+    \item \textbf{Catalan Numbers ($C_n$)}:
+        Explicit formula:
+        \[
+        C_n = \frac{1}{n + 1} \binom{2n}{n}
+        \]
+        Recursive formula:
+        \[
+        C_0 = 1, \quad C_{n+1} = \sum_{i=0}^n C_i C_{n-i} \quad \text{for } n \ge 0
+        \]
+        Applications:
+        \begin{itemize}
+            \item Number of Dyck paths of length $2n$ (paths from $(0,0)$ to $(n,n)$ using only right/up steps that don't go above $y=x$).
+            \item Number of ways to correctly parenthesize $n$ pairs of parentheses.
+            \item Number of full binary trees with $n+1$ leaves.
+        \end{itemize}
+        \textit{Use Case}: How many ways to form a balanced sequence of 3 pairs of parentheses? ($C_3 = 5$)
+    \item \textbf{Inclusion-Exclusion Principle}:
+        For two sets:
+        \[
+        |A \cup B| = |A| + |B| - |A \cap B|
+        \]
+        For $n$ sets:
+        $|\bigcup_{i=1}^n A_i| = \sum |A_i| - \sum_{i<j} |A_i \cap A_j| + \sum_{i<j<k} |A_i \cap A_j \cap A_k| - \dots + (-1)^{n-1} |A_1 \cap \dots \cap A_n|$
+        \textit{Use Case}: Count numbers up to 100 divisible by 2 or 3. ($|A_2 \cup A_3| = |A_2| + |A_3| - |A_2 \cap A_3|$).
+    \item \textbf{Pigeonhole Principle}:
+        If $N$ items are put into $K$ bins, then at least one bin must contain $\lceil N/K \rceil$ items.
+        \textit{Use Case}: In any group of 13 people, at least two must share the same birth month.
+    \item \textbf{Permutations with Repetitions}:
+        Number of distinct permutations of $n$ objects where there are $k_1$ identical objects of type 1, $k_2$ identical objects of type 2, ..., $k_r$ identical objects of type $r$ (and $k_1 + \dots + k_r = n$):
+        \[
+        \frac{n!}{k_1!k_2! \cdots k_r!}
+        \]
+        \textit{Use Case}: How many distinct permutations of the letters in "MISSISSIPPI"? ($\frac{11!}{1!4!4!2!}$)
+    \item \textbf{r-Permutations}:
+        Number of ways to arrange $r$ items chosen from $n$ distinct items ($P(n, r)$):
+        \[
+        P(n, r) = \frac{n!}{(n - r)!}
+        \]
+        \textit{Use Case}: Number of ways to award gold, silver, and bronze medals to 10 runners. ($P(10, 3) = \frac{10!}{7!}$)
+\end{itemize}
