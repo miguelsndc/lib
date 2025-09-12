@@ -4,7 +4,6 @@ nit capacity networks, it's O(min(V^2/3, E^1/2))
 (source/sink only connected to one side of a bipartite graph), it's O(EV).
 usually much faster than worst case
 */
-typedef long long ll;
 struct Edge {
     int u, v;
     ll cap, flow = 0;

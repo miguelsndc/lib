@@ -1,17 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-using i64 = long long;
-using u32 = unsigned;
-using u64 = unsigned long long;
-constexpr i64 inf = 1E18;
-constexpr int mod = 1e9 + 7, maxn = 1e5 + 5;
-
 mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
-
 struct node {
     int cnt, weight, left, right;
-    i64 sum = 0;
+    ll sum = 0;
     int val, neg;
     node (int v): cnt(1), weight(rng()), left(-1), right(-1), sum(v), val(v), neg(0) {}
 };
@@ -32,7 +25,7 @@ void push_lazy(int i) {
 // subtree size
 int cnt(int i) { return i == -1 ? 0 : tree[i].cnt; };
 
-i64 sum(int i) {
+ll sum(int i) {
     if (i >= 0 and tree[i].neg) push_lazy(i);
     return i == -1 ? 0 : tree[i].sum;
 }
@@ -74,7 +67,7 @@ void solve() {
     int n, q; cin >> n >> q;
     vector<int> a(n);
     for (int &x: a) cin >> x;
-    i64 cur_sum = 0;
+    ll cur_sum = 0;
     int rt = -1; 
     for (int i = 0; i < n; i++) {
         cur_sum += i % 2 == 1 ? -a[i] : a[i];

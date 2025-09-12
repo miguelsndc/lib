@@ -1,12 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-using ll = long long;
-#define all(x) (x).begin(), (x).end()
-#define rall(x) (x).rbegin(), (x).rend()
-
-#define vc vector
-
 struct Point {
     ll x, y;
     Point(ll x = 0, ll y = 0) : x(x), y(y) {}
@@ -105,12 +96,4 @@ void solve() {
     for (auto [x, y] : ans) {
         cout << x << ' ' << y << '\n';
     }
-}
-
-int32_t main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    int T = 1;  // cin >> T;
-    while (T--) solve();
 }

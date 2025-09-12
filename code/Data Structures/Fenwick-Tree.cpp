@@ -2,26 +2,23 @@
     Fenwick Tree - Range Queries
 */
 
-template <typename T = int>
-struct FenwickTree {
-    vector<T> bit(maxn), arr(maxn);
-
-    // O(log(n))
-    void add(int pos, int val) {
-        for (int i = pos + 1; i < maxn; i += (i & (-i))) bit[i] += val;
+struct Fenwick {
+    int n;
+    vector<ll> bit;
+    Fenwick(int _n = 0) { init(_n); }
+    void init(int _n) {
+        n = _n;
+        bit.assign(n + 1, 0);
     }
-
-    // O(log(n))
-    void pset(int pos, int val) {
-        int delta = val - arr[pos];
-        arr[pos] = val;
-        add(pos, delta);
+    // add val at position pos (0-based)
+    void add(int pos, int val = 1) {
+        for (int i = pos + 1; i <= n; i += i & -i) bit[i] += val;
     }
-
-    // O(log(n))
-    T query(int pos) {
-        T sum = 0;
-        for (int i = pos + 1; i > 0; i -= (i & (-i))) sum += bit[i];
-        return sum;
+    // sum [0..pos] (0-based)
+    ll sum(int pos) const {
+        if (pos < 0) return 0;
+        ll s = 0;
+        for (int i = pos + 1; i > 0; i -= i & -i) s += bit[i];
+        return s;
     }
 };

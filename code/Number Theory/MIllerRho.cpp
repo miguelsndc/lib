@@ -1,7 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-#define ll long long
-
 // O(1)
 ll fmul(ll a, ll b, ll M) {
     ll k = a * b - M * (long long)(1.L / M * a * b);
@@ -56,14 +52,4 @@ vector<ll> factor(ll n) {
     auto l = factor(x), r = factor(n / x);
     for (ll x : r) l.push_back(x);
     return l;
-}
-
-void solve() {
-    ll N;
-    cin >> N;
-    if (factor(N).size() == 20) {
-        cout << "Yes\n";
-    } else {
-        cout << "No\n";
-    }
 }

@@ -1,7 +1,3 @@
-#include <bits/stdc++.h>
-#define ll long long
-using namespace std;
-
 /*
 Digit DP 
 Calcula a soma dos digitos de todos os numeros entre 0 e `number`

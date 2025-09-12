@@ -1,7 +1,3 @@
-#include <bits/stdc++.h>
-#define ll long long
-using namespace std;
-
 /*
     Knapsack Problem -
     Given a set of items with value i and cost j, and you have limited budget
