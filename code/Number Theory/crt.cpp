@@ -23,6 +23,7 @@ pll crt(vector<pll> congruences) {
         auto [a, n] = congruences[i];
         auto [x, y, d] = euclides_ext(lcm, n);
         if ((a - ans) % d != 0) return {-1, -1};
+        // se overflow: ans = fix(ans + (__int128)x * (a - ans) / d % (n / d) * lcm, lcm * n / d);
         ans = fix(ans + x * (a - ans) / d % (n / d) * lcm, lcm * n / d);
         lcm = lcm * n / d;
     }
