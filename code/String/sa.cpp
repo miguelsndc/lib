@@ -1,9 +1,3 @@
-/*
-    Suffix Array
-    Constrói o suffix array e o lcp array em O(n log n) pro sa + O(n) pro lcp
-*/
-
-
 vector<int> build_sa(string &s) {
     s += '$';
     int n = s.size();

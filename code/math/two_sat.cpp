@@ -1,13 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-/*
-2-satisfiability testado em (https://judge.yosupo.jp/problem/two_sat)
-N variáveis e M clausulas de (and, or, xor, nor,etc) para serem satisfeitas
-ao mesmo tempo, determina se existe e dá uma resposta. 
-O(N + M) com Kosaraju
-*/
-
 struct two_sat {
     int n;
     vector<vector<int>> graph, reverse_graph;

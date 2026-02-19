@@ -81,19 +81,3 @@ bool is_inside(vector<Point>& hull, Point p) {
     }
     return strictly_inside_triangle(hull[0], hull[l], hull[r], p);
 }
-
-void solve() {
-    int n;
-    cin >> n;
-    vector<Point> a(n);
-    for (int i = 0; i < n; i++) {
-        int x, y;
-        cin >> x >> y;
-        a[i] = {x, y};
-    }
-    vector<Point> ans = ch(a);
-    cout << ans.size() << '\n';
-    for (auto [x, y] : ans) {
-        cout << x << ' ' << y << '\n';
-    }
-}

@@ -28,7 +28,7 @@ int query(string &s){
 	return word_end[cur];
 }
 
-// Sempre inicializar antes
+// chamar antes
 void init(){
 	memset(trie[0], -1, sizeof trie[0]);
     memset(word_end, 0, sizeof word_end);

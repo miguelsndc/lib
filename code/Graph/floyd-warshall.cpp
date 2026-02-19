@@ -1,9 +1,3 @@
-/*
-    Floyd Warshall - All Pairs Shortest Path
-    Funciona apenas em matrizes
-    Complexidade O(n³)
-*/
-
 vector<vector<ll>> FloydWarshall(int n, vector<vector<int>> &graph) {
     // precomputa distâncias O(n²)
     vector<vector<ll>> distance(n, vector<ll>(n, INF));

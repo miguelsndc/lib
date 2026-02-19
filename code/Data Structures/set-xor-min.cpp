@@ -1,16 +1,5 @@
-/*
-    Set Xor Min/Max
-    
-    C = maior valor
-    insere um numero em log(C)
-    faz a query de um numero descendo na trie em log(C)
-
-    pra pegar o menor/maior xor desse numero com os outros em log
-*/
-
 const int mxbit = 32;
 const int mxn = 2e5 + 5;
-
 int trie[mxbit * mxn][2], z = 1;
 memset(trie[0], -1, sizeof trie);
 

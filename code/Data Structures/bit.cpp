@@ -1,11 +1,7 @@
-/*
-    Fenwick Tree - Range Queries
-*/
-
-struct Fenwick {
+struct BIT{
     int n;
     vector<ll> bit;
-    Fenwick(int _n = 0) { init(_n); }
+    BIT(int _n = 0) { init(_n); }
     void init(int _n) {
         n = _n;
         bit.assign(n + 1, 0);
