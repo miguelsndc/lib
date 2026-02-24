@@ -1,75 +1,91 @@
 /*
-O(V²E) in general graphs. u
-nit capacity networks, it's O(min(V^2/3, E^1/2))
-(source/sink only connected to one side of a bipartite graph), it's O(EV).
-usually much faster than worst case
-*/
-struct Edge {
-    int u, v;
-    ll cap, flow = 0;
-    Edge(int u, int v, ll cap) : u(u), v(v), cap(cap) {}
-};
-
-template<typename T>
+ * Dinic's Algorithm - Maximum Flow / Minimum Cut
+ * * Complexidade:
+ * - Geral: O(V^2 * E)
+ * - Capacidades Unitárias: O(min(V^(2/3), E^(1/2)) * E)
+ * - Bipartite Matching: O(E * sqrt(V))
+ * * Aplicações & Reduções (via get_reachable):
+ * 1. Min Cut: Arestas de u (Reachable) para v (!Reachable).
+ * 2. Max Bipartite Matching: S->L, R->T, L->R (caps=1). Flow = Matching Size.
+ * 3. Min Vertex Cover (Bipartido): (L \ Reachable) U (R ∩ Reachable).
+ * 4. Max Independent Set (Bipartido): V - Min Vertex Cover (ou nós: (L ∩ Reachable) U (R \ Reachable)).
+ * 5. Max Weight Closure (Project Selection): S->Projeto(Lucro), Maquina->T(Custo), Dependencias: cap = INF. Ans = Sum(Lucro+) - Flow.
+ * 6. Edge Disjoint Paths: Todas as caps = 1.
+ * 7. Vertex Disjoint Paths: Split node u -> (u_in, u_out) com cap=1.
+ * 8. Path Cover (DAG): V - Max Bipartite Matching.
+ */
 struct Dinic {
-    vector<Edge> edges;
-    vector<vector<int>> adj;
-    int n, s, t, m = 0;
-    vector<int> lvl, ptr;
-    queue<int> q;
-    Dinic(int n, int s, int t) : n(n), s(s), t(t) {
-        adj.resize(n);
-        lvl.resize(n);
-        ptr.resize(n);
+    struct Edge {
+        int to, rev;
+        ll cap;
+    };
+    vector<vector<Edge>> adj;
+    vector<int> lvl, ptr, q;
+    int n;
+
+    Dinic(int n) : n(n), adj(n), lvl(n), ptr(n), q(n) {}
+
+    void add_edge(int u, int v, ll cap) {
+        adj[u].push_back({v, (int)adj[v].size(), cap});
+        adj[v].push_back({u, (int)adj[u].size() - 1, 0});
     }
-    void add_edge(int u, int v, ll cap, ll other = 0) {
-        edges.emplace_back(u, v, cap);
-        edges.emplace_back(v, u, other);
-        adj[u].push_back(m++);
-        adj[v].push_back(m++);
-    }
-    bool bfs() {
-        while (!q.empty()) {
-            int u = q.front();
-            q.pop();
-            for (int id : adj[u]) {
-                if (edges[id].cap == edges[id].flow) continue;
-                if (lvl[edges[id].v] != -1) continue;
-                lvl[edges[id].v] = lvl[u] + 1;
-                q.push(edges[id].v);
+
+    bool bfs(int s, int t) {
+        fill(lvl.begin(), lvl.end(), -1);
+        lvl[s] = 0;
+        int head = 0, tail = 0;
+        q[tail++] = s;
+        while (head < tail) {
+            int u = q[head++];
+            for (auto& e : adj[u]) {
+                if (e.cap > 0 && lvl[e.to] == -1) {
+                    lvl[e.to] = lvl[u] + 1;
+                    q[tail++] = e.to;
+                }
             }
         }
         return lvl[t] != -1;
     }
 
-    ll dfs(int u, ll pushed) {
-        if (pushed == 0) return 0;
-        if (u == t) return pushed;
-        for (int &cid = ptr[u]; cid < (int)adj[u].size(); cid++) {
-            int id = adj[u][cid];
-            int v = edges[id].v;
-            if (lvl[v] != lvl[u] + 1) continue;
-            ll tr = dfs(v, min(pushed, edges[id].cap - edges[id].flow));
+    ll dfs(int u, int t, ll pushed) {
+        if (pushed == 0 || u == t) return pushed;
+        for (int& cid = ptr[u]; cid < adj[u].size(); ++cid) {
+            auto& e = adj[u][cid];
+            if (lvl[u] + 1 != lvl[e.to] || e.cap == 0) continue;
+            ll tr = dfs(e.to, t, min(pushed, e.cap));
             if (tr == 0) continue;
-            edges[id].flow += tr;
-            edges[id ^ 1].flow -= tr;
+            e.cap -= tr;
+            adj[e.to][e.rev].cap += tr;
             return tr;
         }
         return 0;
     }
 
-    ll flow() {
+    ll flow(int s, int t) {
         ll f = 0;
-        while (1) {
-            fill(lvl.begin(), lvl.end(), -1);
-            lvl[s] = 0;
-            q.push(s);
-            if (!bfs()) break;
+        while (bfs(s, t)) {
             fill(ptr.begin(), ptr.end(), 0);
-            while (ll p = dfs(s, inf)) {
-                f += p;
+            while (ll pushed = dfs(s, t, 1e18)) {
+                f += pushed;
             }
         }
         return f;
+    }
+    
+    vector<bool> get_reachable(int s) {
+        vector<bool> vis(n);
+        int head = 0, tail = 0;
+        q[tail++] = s;
+        vis[s] = true;
+        while (head < tail) {
+            int u = q[head++];
+            for (auto& e : adj[u]) {
+                if (e.cap > 0 && !vis[e.to]) {
+                    vis[e.to] = true;
+                    q[tail++] = e.to;
+                }
+            }
+        }
+        return vis;
     }
 };
