@@ -35,73 +35,79 @@
  */
 struct Dinic {
     struct Edge {
-        int to, rev;
-        ll cap;
+        int to, rev; 
+        ll cap, flow = 0;
     };
+
     vector<vector<Edge>> adj;
-    vector<int> lvl, ptr, q;
-    int n;
+    vector<int> lvl, ptr;
+    int n, s, t;
+    
+    Dinic(int n, int s, int t) : n(n), s(s), t(t), adj(n), lvl(n), ptr(n) {}
 
-    Dinic(int n) : n(n), adj(n), lvl(n), ptr(n), q(n) {}
-
-    void add_edge(int u, int v, ll cap) {
-        adj[u].push_back({v, (int)adj[v].size(), cap});
-        adj[v].push_back({u, (int)adj[u].size() - 1, 0});
+    void add_edge(int u, int v, ll cap, bool rev = false) {
+        adj[u].push_back({v, (int)adj[v].size(), cap, 0});
+        adj[v].push_back({u, (int)adj[u].size() - 1, rev ? cap : 0, 0});
     }
 
-    bool bfs(int s, int t) {
+    bool bfs() {
         fill(lvl.begin(), lvl.end(), -1);
         lvl[s] = 0;
-        int head = 0, tail = 0;
-        q[tail++] = s;
-        while (head < tail) {
-            int u = q[head++];
+        queue<int> q;
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
             for (auto& e : adj[u]) {
-                if (e.cap > 0 && lvl[e.to] == -1) {
+                if (e.cap - e.flow > 0 && lvl[e.to] == -1) {
                     lvl[e.to] = lvl[u] + 1;
-                    q[tail++] = e.to;
+                    q.push(e.to);
                 }
             }
         }
         return lvl[t] != -1;
     }
 
-    ll dfs(int u, int t, ll pushed) {
+    ll dfs(int u, ll pushed) {
         if (pushed == 0 || u == t) return pushed;
         for (int& cid = ptr[u]; cid < adj[u].size(); ++cid) {
             auto& e = adj[u][cid];
-            if (lvl[u] + 1 != lvl[e.to] || e.cap == 0) continue;
-            ll tr = dfs(e.to, t, min(pushed, e.cap));
-            if (tr == 0) continue;
-            e.cap -= tr;
-            adj[e.to][e.rev].cap += tr;
-            return tr;
+            ll tr = e.to;
+            if (lvl[u] + 1 != lvl[e.to] || e.cap - e.flow == 0) continue;
+            
+            ll push = dfs(e.to, min(pushed, e.cap - e.flow));
+            if (push == 0) continue;
+            
+            e.flow += push;
+            adj[e.to][e.rev].flow -= push; 
+            return push;
         }
         return 0;
     }
 
-    ll flow(int s, int t) {
+    ll flow() {
         ll f = 0;
-        while (bfs(s, t)) {
+        while (bfs()) {
             fill(ptr.begin(), ptr.end(), 0);
-            while (ll pushed = dfs(s, t, 1e18)) {
+            while (ll pushed = dfs(s, 1e18)) {
                 f += pushed;
             }
         }
         return f;
     }
     
-    vector<bool> get_reachable(int s) {
-        vector<bool> vis(n);
-        int head = 0, tail = 0;
-        q[tail++] = s;
+    vector<bool> get_reachable() {
+        vector<bool> vis(n, false);
+        queue<int> q;
+        q.push(s);
         vis[s] = true;
-        while (head < tail) {
-            int u = q[head++];
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
             for (auto& e : adj[u]) {
-                if (e.cap > 0 && !vis[e.to]) {
+                if (e.cap - e.flow > 0 && !vis[e.to]) {
                     vis[e.to] = true;
-                    q[tail++] = e.to;
+                    q.push(e.to);
                 }
             }
         }
