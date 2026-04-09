@@ -1,7 +1,6 @@
-template <typename T>
 struct DSU {
     vector<int> par, sz;
-    UnionFind(int n) {
+    DSU(int n) {
         par.assign(n, 0);
         sz.assign(n, 1);
         iota(par.begin(), par.end(), 0);
