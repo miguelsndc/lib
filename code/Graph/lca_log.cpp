@@ -27,10 +27,18 @@ bool is_ancestor(int u, int v) {
 int lca(int a, int b) {
     if (is_ancestor(a, b)) return a;
     if (is_ancestor(b, a)) return b;
-    for (int i = LOG; i >= 0; i--) {
-        if (!is_ancestor(up[a][i], b)) {
-            a = up[a][i];
+    if (depth[a] < depth[b]) swap(a, b);
+    int diff = depth[a] - depth[b];
+    for (int i = LOG - 1; i >= 0; i--) {
+        if (diff & (1 << i)) {
+            a = up[i][a];
         }
     }
-    return up[a][0];
+    for (int i = LOG - 1; i >= 0; i--) {
+        if (up[i][a] != up[i][b]) {
+            a = up[i][a];
+            b = up[i][b];
+        }
+    }
+    return up[0][a];
 }
