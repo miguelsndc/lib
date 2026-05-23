@@ -2,6 +2,13 @@ ll cross(const point& a, const point& b) {
     return (ll)a.x * b.y - (ll)a.y * b.x;
 };
 
+// Retorna 0 para a metade superior (incluindo o eixo X positivo)
+// Retorna 1 para a metade inferior (incluindo o eixo X negativo)
+int half(const Point& p) {
+    if (p.y < 0 || (p.y == 0 && p.x < 0)) return 1;
+    return 0;
+}
+
 // Ordenação radial (ccw)
 bool cmp(const Point& a, const Point& b) {
     // ah = 0 se estiver na metade superior do plano, 1 se estiver na inferior
