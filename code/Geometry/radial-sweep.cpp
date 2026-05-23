@@ -11,12 +11,13 @@ int half(const Point& p) {
 
 // Ordenação radial (ccw)
 bool cmp(const Point& a, const Point& b) {
-    // ah = 0 se estiver na metade superior do plano, 1 se estiver na inferior
-    int ah = (a.y < 0 || (a.y == 0 && a.x < 0)) ? 1 : 0;
-    int bh = (b.y < 0 || (b.y == 0 && b.x < 0)) ? 1 : 0;
+    int ha = half(a);
+    int hb = half(b);
     
-    if (ah != bh) return ah < bh;
-    
-    // Se estiverem na mesma metade, usamos o produto vetorial
+    // Se estão em metades diferentes, a superior vem primeiro
+    if (ha != hb) {
+        return ha < hb;
+    }
+    // Se estão na mesma metade, ordenamos pelo produto vetorial
     return cross(a, b) > 0;
 }
