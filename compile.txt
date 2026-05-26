@@ -1,0 +1,7 @@
+adiciona em ~/.bashrc
+
+run(){ g++ -std=c++20 -DLOCAL -Wall -Wextra -Wshadow -Wno-sign-compare -g -fsanitize=address,undefined "$1"&&./a.out;}
+
+run <file>.cpp
+
+  
