@@ -1,66 +1,77 @@
-struct Tag {
-    Tag() {
-    }
-    Tag(ll x) {
-    }
-    void compose(const Tag& t) {}
+enum QueryType { ADD, SET, NONE };
+struct Query {
+    QueryType type = NONE;
+    ll val = 0;
 };
-
-struct Node {
-    Node() = default;
-    Node(ll v) {
+template<typename T> class LazySegtree {
+private:
+    const int n;
+    vector<T> tree;
+    vector<Query> lazy;
+    void pull(int v) {
+        tree[v] = tree[v * 2 + 1] + tree[v * 2 + 2];
     }
-    void apply(const Tag& t) {
+    void build(const vector<T>& a, int l, int r, int v = 0) {
+        if (l == r) {
+            tree[v] = a[l];
+        }
+        else {
+            int m = (l + r) / 2;
+            build(a, l, m, v * 2 + 1);
+            build(a, m + 1, r, v * 2 + 2);
+            pull(v);
+        }
     }
-    static inline Node merge(Node& left, Node& right) {
+    void apply(int v, int len, const Query& x) {
+        if (x.type == ADD) {
+            if (lazy[v].type != SET) {
+                lazy[v] = Query{ ADD,lazy[v].val + x.val };
+            }
+            else {
+                lazy[v] = Query{ SET,lazy[v].val + x.val };
+            }
+            tree[v] += x.val * len;
+        }
+        else if (x.type == SET) {
+            tree[v] = x.val * len;
+            lazy[v] = x;
+        }
     }
-};
-
-Node seg[4 * ms];
-Tag lazy[4 * ms];
-ll a[ms];
-
-void build(int l, int r, int v = 0) {
-    if (l == r) {
-        seg[v] = Node(a[l]);
-    } else {
+    void push_down(int v, int l, int r) {
         int m = (l + r) / 2;
-        build(l, m, v * 2 + 1);
-        build(m + 1, r, v * 2 + 2);
-        seg[v] = Node::merge(seg[v * 2 + 1], seg[v * 2 + 2]);
+        apply(v * 2 + 1, m - l + 1, lazy[v]);
+        apply(v * 2 + 2, r - m, lazy[v]);
+        lazy[v] = Query();
     }
-}
-
-void push(int v, int l, int r) {
-    int left = v * 2 + 1;
-    int right = v * 2 + 2;
-    seg[left].apply(lazy[v]);
-    lazy[left].compose(lazy[v]);
-    seg[right].apply(lazy[v]);
-    lazy[right].compose(lazy[v]);
-    lazy[v] = Tag();
-}
-
-void update(int a, int b, int l, int r, Tag add, int v = 0) {
-    if (b < l or a > r) return;
-    if (a <= l and r <= b) {
-        seg[v].apply(add);
-        lazy[v].compose(add);
-        return;
+    void range_update(int ql, int qr, int l, int r, const Query& x, int v) {
+        if (qr < l || ql > r) { return; }
+        if (ql <= l && r <= qr) {
+            apply(v, r - l + 1, x);
+        }
+        else {
+            push_down(v, l, r);
+            int m = (l + r) / 2;
+            range_update(ql, qr, l, m, x, v * 2 + 1);
+            range_update(ql, qr, m + 1, r, x, v * 2 + 2);
+            pull(v);
+        }
     }
-    push(v, l, r);
-    int m = (l + r) / 2;
-    update(a, b, l, m, add, v * 2 + 1);
-    update(a, b, m + 1, r, add, v * 2 + 2);
-    seg[v] = Node::merge(seg[v * 2 + 1], seg[v * 2 + 2]);
-}
 
-Node query(int a, int b, int l, int r, int v = 0) {
-    if (b < l or a > r) return Node();
-    if (a <= l and r <= b) return seg[v];
-    push(v, l, r);
-    int m = (l + r) / 2;
-    Node le = query(a, b, l, m, v * 2 + 1);
-    Node ri = query(a, b, m + 1, r, v * 2 + 2);
-    return Node::merge(le, ri);
-}
+    T range_sum(int ql, int qr, int l, int r, int v) {
+        if (qr < l or ql > r) return 0;
+        if (l >= ql and r <= qr) return tree[v];
+        push_down(v, l, r);
+        int m = (l + r) / 2;
+        return range_sum(ql, qr, l, m, v * 2 + 1) + range_sum(ql, qr, m + 1, r, v * 2 + 2);
+    }
+public:
+    LazySegtree(const vector<T>& a) : n(a.size()), tree(4 * n), lazy(4 * n) {
+        build(a, 0, n - 1);
+    }
+
+    void range_update(int ql, int qr, const Query& x) {
+        range_update(ql, qr, 0, n - 1, x, 0);
+    }
+
+    T range_sum(int ql, int qr) { return range_sum(ql, qr, 0, n - 1, 0); }
+};
