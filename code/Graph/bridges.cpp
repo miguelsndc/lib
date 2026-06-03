@@ -6,7 +6,7 @@ void acha_pontes(int u, int p = -1) {
     for (int v : g[u]) {
         if (v == p) continue;
         if (dfn[v] == -1) {
-            acha_pontes(v);
+            acha_pontes(v,u);
             low[u] = min(low[u], low[v]);
             if (low[v] > dfn[u]) {
                 // (u,v) é uma bridge
