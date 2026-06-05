@@ -1,56 +1,23 @@
-vector<int> build_sa(string &s) {
-    s += '$';
-    int n = s.size();
-    const int ALPHA = 256;
-    vector<int> p(n), c(n), cnt(max(ALPHA, n));
-    for (int i = 0; i < n; i++) cnt[s[i]]++;
-    for (int i = 1; i < ALPHA; i++) cnt[i] += cnt[i - 1];
-    for (int i = 0; i < n; i++) p[--cnt[s[i]]] = i;
-    c[p[0]] = 0; int classes = 1;
-    for (int i = 1; i < n; i++) {
-        if (s[p[i]] != s[p[i - 1]]) classes++;
-        c[p[i]] = classes - 1;
-    }
-    vector<int> pn(n), cn(n);
-    for (int h = 0; (1 << h) < n; h++) {
-        for (int i = 0; i < n; i++) {
-            pn[i] = p[i] - (1 << h);
-            if (pn[i] < 0) pn[i] += n;
+struct SuffixArray {
+    vector<int> sa, lcp;
+    SuffixArray(string& s, int lim = 256) {  // or basic string<int>
+        int n = szo(s) + 1, k = 0, a, b;
+        vector<int> x(s.begin(), s.end()), y(n), ws(max(n, lim));
+        x.push_back(0), sa = lcp = y, iota(sa.begin(), sa.end(), 0);
+        for (int j = 0, p = 0; p < n; j = max(1ll, j * 2), lim = p) {
+            p = j, iota(y.begin(), y.end(), n - j);
+            for (int i = 0; i < n; i++)
+                if (sa[i] >= j) y[p++] = sa[i] - j;
+            fill(ws.begin(), ws.end(), 0);
+            for (int i = 0; i < n; i++) ws[x[i]]++;
+            for (int i = 1; i < lim; i++) ws[i] += ws[i - 1];
+            for (int i = n; i--;) sa[--ws[x[y[i]]]] = y[i];
+            swap(x, y), p = 1, x[sa[0]] = 0;
+            for (int i = 1; i < n; i++)
+                a = sa[i - 1], b = sa[i],
+                x[b] = (y[a] == y[b] and y[a + j] == y[b + j]) ? p - 1 : p++;
         }
-        fill(cnt.begin(), cnt.begin() + classes, 0);
-        for (int i = 0; i < n; i++) cnt[c[pn[i]]]++;
-        for (int i = 1; i < classes; i++) cnt[i] += cnt[i - 1];
-        for (int i = n - 1; i >= 0; i--) p[--cnt[c[pn[i]]]] = pn[i];
-        cn[p[0]] = 0; 
-        int new_classes = 1;
-        for (int i = 1; i < n; i++) {
-            pair<int, int> cur = {c[p[i]], c[(p[i] + (1 << h)) % n]};
-            pair<int, int> prev = {c[p[i-1]], c[(p[i-1] + (1 << h)) % n]};
-            if (cur != prev) ++new_classes;
-            cn[p[i]] = new_classes - 1;
-        }
-        c.swap(cn);
-        swap(classes, new_classes);
+        for (int i = 0, j; i < n - 1; lcp[x[i++]] = k)
+            for (k and k--, j = sa[x[i] - 1]; s[i + k] == s[j + k]; k++);
     }
-    s.pop_back();
-    p.erase(p.begin());
-    return p;
-}
-
-vector<int> build_lcp(string &s, vector<int> &sa) {
-    int n = s.size();
-    vector<int> rank(n, 0);
-    for (int i = 0; i < n; i++) rank[sa[i]] = i;
-    int k = 0;
-    vector<int> lcp(n - 1, 0);
-    for (int i = 0; i < n; i++) {
-        if (rank[i] == n - 1) {
-            k = 0; continue;
-        }
-        int j = sa[rank[i] + 1];
-        while (i + k < n and j + k < n and s[i + k] == s[j + k]) k++;
-        lcp[rank[i]] = k;
-        if(k) k--;
-    }
-    return lcp;
-}
+};
