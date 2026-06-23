@@ -1,3 +1,47 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define szo(x) (int)(x).size()
+
+/*
+===========================================================================
+  [SUFIX ARRAY & LCP] - CHEAT SHEET PARA MÚLTIPLAS STRINGS
+===========================================================================
+  
+  * QUANDO USAR:
+    - Encontrar a maior substring comum (LCS).
+    - Contar substrings distintas.
+    - Achar a substring repetida mais longa.
+    - DICA: Se for LCS de apenas 2 strings, NÃO use Two Pointers. Basta 
+      iterar o LCP procurando o maior valor entre sufixos adjacentes 
+      que pertencem a strings diferentes.
+
+  * COMO FAZER LCS DE K STRINGS (K > 2):
+    1. Concatenação Segura: Junte todas as strings usando delimitadores 
+       ÚNICOS e não imprimíveis (Ex: s1 + char(1) + s2 + char(2)...). 
+       Nunca repita o delimitador para evitar matches fantasmas.
+    2. Construa o Suffix Array desta string concatenada.
+    3. Construa os vetores de mapeamento (orig_id e sa_id).
+    4. Two Pointers + MinQueue: Deslize uma janela [L, R] sobre o array 
+       ordenado (usando sa_id) até ter pelo menos um sufixo de cada string.
+       O menor valor do LCP dentro dessa janela (obtido em O(1) com MinQueue)
+       será um candidato à resposta.
+    
+  * O VETOR 'orig_id' (ESPAÇO DA STRING FÍSICA):
+    - O que é: orig_id[i] responde "O caractere que está na posição 'i' 
+      da string gigante concatenada pertence a qual string? (0, 1, 2...)"
+    - Como construir: Preencha linearmente um `vector<int> orig_id(n)` 
+      enquanto monta a string gigante. Defina os delimitadores como -1.
+      
+  * O VETOR 'sa_id' (ESPAÇO DO SUFFIX ARRAY ORDENADO):
+    - O que é: sa_id[i] responde "O sufixo que caiu na posição 'i' do 
+      Suffix Array (depois de ordenado alfabeticamente) veio de qual string?"
+    - Como usar: É aqui que o seu Two Pointers vai iterar!
+    - A Fórmula de Ouro de Transição:
+      sa_id[i] = orig_id[sa[i]] 
+===========================================================================
+*/
+
 struct SuffixArray {
     vector<int> sa, lcp;
     SuffixArray(string& s, int lim = 256) {  // or basic string<int>
